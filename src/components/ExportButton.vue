@@ -45,9 +45,4 @@ function exportPng() {
   </button>
 </template>
 
-<style scoped>
-.btn-export {
-  width: 100%;
-  padding: 0.6rem;
-}
-</style>
+<!-- todo o css desse componente foi movido pra base.css -->

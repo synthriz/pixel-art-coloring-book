@@ -165,18 +165,6 @@ function fitToViewport() {
 
 <template>
   <div class="canvas-container">
-
-    <!-- barra de controles de zoom/pan -->
-    <div class="view-controls">
-      <!-- botoes de zoom in/out pelos botoes => cada clique e 3x o ZOOM_STEP -->
-      <button class="btn-view" @click="zoom = Math.min(MAX_ZOOM, zoom + ZOOM_STEP * 3)">+</button>
-      <span class="zoom-label">{{ Math.round(zoom * 100) }}%</span>
-      <button class="btn-view" @click="zoom = Math.max(MIN_ZOOM, zoom - ZOOM_STEP * 3)">−</button>
-      <button class="btn-view" @click="resetView" title="100%">1:1</button>
-      <button class="btn-view" @click="fitToViewport" title="Encaixar">⊡</button>
-      <span class="pan-hint">Scroll = zoom · Espaço+drag ou botão do meio = mover</span>
-    </div>
-
     <!--
       viewport: a janela que mostra o canvas
       overflow: hidden corta o canvas quando ele e maior que o viewport
@@ -187,6 +175,17 @@ function fitToViewport() {
       class="canvas-viewport"
       @wheel.prevent="onWheel"
     >
+      <!-- barra de controles de zoom/pan sobreposta ao canvas -->
+      <div class="view-controls glass-surface">
+        <!-- botoes de zoom in/out pelos botoes => cada clique e 3x o ZOOM_STEP -->
+        <button class="btn-view" @click="zoom = Math.min(MAX_ZOOM, zoom + ZOOM_STEP * 3)">+</button>
+        <span class="zoom-label">{{ Math.round(zoom * 100) }}%</span>
+        <button class="btn-view" @click="zoom = Math.max(MIN_ZOOM, zoom - ZOOM_STEP * 3)">−</button>
+        <button class="btn-view" @click="resetView" title="100%">1:1</button>
+        <button class="btn-view" @click="fitToViewport" title="Encaixar">⊡</button>
+        <span class="pan-hint">Scroll = zoom · Espaço+drag ou botão do meio = mover</span>
+      </div>
+
       <!--
         camada de transformacao css
         aqui que o zoom e pan sao aplicados via transform
@@ -211,65 +210,3 @@ function fitToViewport() {
 
   </div>
 </template>
-
-<style scoped>
-.canvas-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 0; /* evita que o flex item estoure o container pai */
-  height: 100%;
-}
-.view-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  flex-shrink: 0; /* nao encolhe quando o espaco for curto */
-}
-.btn-view {
-  padding: 0.2rem 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #FAFAFA;
-  cursor: pointer;
-  font-size: 1rem;
-  line-height: 1;
-  min-width: 28px;
-  text-align: center;
-}
-.btn-view:hover {
-  background: #f0f0f0;
-}
-.zoom-label {
-  font-size: 0.8rem;
-  color: #555;
-  min-width: 36px;
-  text-align: center;
-}
-.pan-hint {
-  font-size: 0.72rem;
-  color: #aaa;
-  margin-left: 0.4rem;
-}
-.canvas-viewport {
-  flex: 1; /* ocupa todo o espaco vertical disponivel */
-  position: relative;
-  overflow: hidden; /* corta o que sair do viewport */
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: #e8e8e8;
-  min-height: 200px;
-}
-.canvas-transform-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  will-change: transform; /* hint pro browser otimizar a animacao de transform */
-}
-.coloring-canvas {
-  display: block;
-  cursor: crosshair;
-  touch-action: none; /* evita o browser fazer scroll/zoom nativo com o toque */
-  image-rendering: pixelated; /* renderizacao nitida sem suavizacao pra pixel art */
-}
-</style>

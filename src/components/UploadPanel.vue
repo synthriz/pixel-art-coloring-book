@@ -76,7 +76,7 @@ function onDrop(e) {
     os eventos @dragover, @dragleave e @drop controlam o drag-and-drop
   -->
   <div
-    class="upload-panel"
+    class="upload-panel glass-surface"
     :class="{ 'upload-panel--dragover': isDragOver }"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -108,46 +108,4 @@ function onDrop(e) {
   </div>
 </template>
 
-<style scoped>
-/* scoped = esse css so afeta esse componente, nao vaza pra fora */
-.upload-panel {
-  border: 2px dashed #bbb;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: border-color 0.2s, background 0.2s;
-  cursor: pointer;
-}
-.upload-panel--dragover {
-  border-color: #12743e;
-  background: rgba(79, 142, 247, 0.07);
-}
-.upload-input {
-  display: none; /* esconde o input feio do browser */
-}
-.upload-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-}
-.upload-text {
-  color: #666;
-  margin: 0;
-}
-.upload-preview {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-.preview-img {
-  max-width: 100%;
-  max-height: 200px;
-  border-radius: 4px;
-  object-fit: contain;
-  border: 1px solid #ddd;
-}
-.preview-meta {
-  font-size: 0.8rem;
-  color: #888;
-}
-</style>
+<!-- todo o css desse componente foi movido pra base.css -->

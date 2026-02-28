@@ -1,61 +1,231 @@
 @import './base.css';
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #f0f0f2;
-  color: #18181b;
-}
+/* ============================================================
+  estilos globais + sistema compartilhado de botoes
+  ============================================================ */
 
 #app {
-  /* mata as constraints do grid */
   max-width: none;
   margin: 0;
   padding: 0;
-  font-weight: normal;
 }
 
-/* = style de botao compartilhados pelo ap = */
-.btn-primary {
-  background: #12743e;
-  color: #FAFAFA;
+/* ----------------------------------------------------------
+  base de botoes
+  ---------------------------------------------------------- */
+button {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: 1;
+  cursor: pointer;
   border: none;
-  border-radius: 6px;
-  padding: 0.55rem 1rem;
-  font-size: 0.9rem;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    opacity var(--transition-base),
+    transform var(--transition-spring);
+}
+
+button:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+/* ----------------------------------------------------------
+  .btn-primary — gerar quebra cabeca, exportar png
+  preenchimento cinza quente solido. discreto porem claro.
+  ---------------------------------------------------------- */
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, opacity 0.15s;
+  letter-spacing: var(--tracking-wide);
+  box-shadow: var(--shadow-sm);
 }
+
+[data-theme="dark"] .btn-primary {
+  color: #1a1917;
+}
+
 .btn-primary:hover:not(:disabled) {
-  background: #a1d0ad;
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
+
+.btn-primary:active:not(:disabled) {
+  background: var(--accent-active);
+  box-shadow: var(--shadow-xs);
+  transform: translateY(0);
+}
+
+.btn-primary:focus-visible {
+  box-shadow: var(--focus-ring), var(--shadow-sm);
+}
+
 .btn-primary:disabled {
-  opacity: 0.45;
+  opacity: 0.35;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
+/* ----------------------------------------------------------
+  .btn-secondary — nova imagem, visual menos pesado
+  ---------------------------------------------------------- */
 .btn-secondary {
-  background: #FAFAFA;
-  color: #18181b;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.btn-secondary:hover {
-  background: #f0f0f0;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-base);
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-xs);
 }
 
+.btn-secondary:hover {
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-secondary:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+/* ----------------------------------------------------------
+  .btn-solve — resolver tudo, accent tint, largura total
+  minimal — sem drama de cor, consistente com tom do accent.
+  ---------------------------------------------------------- */
+.btn-solve {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  width: 100%;
+}
+
+.btn-solve:hover:not(:disabled) {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.btn-solve:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-solve:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.btn-solve:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ----------------------------------------------------------
+  .btn-option — seletor de tamanho da paleta (6 / 8 / 12 / 16)
+  ---------------------------------------------------------- */
+.btn-option {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-base);
+  font-weight: 500;
+  min-width: 40px;
+  min-height: 32px;
+}
+
+.btn-option:hover {
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+.btn-option--active {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--accent-border);
+  font-weight: 600;
+}
+
+.btn-option--active:hover {
+  color: var(--accent-hover);
+}
+
+.btn-option:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+/* ----------------------------------------------------------
+  .btn-view — controles de zoom (+, −, 1:1, ajustar)
+  ---------------------------------------------------------- */
+.btn-view {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-md);
+  font-weight: 500;
+  line-height: 1;
+  min-width: 28px;
+  min-height: 28px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.btn-view:hover {
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-view:active {
+  box-shadow: none;
+}
+
+.btn-view:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+/* ----------------------------------------------------------
+  .btn-sm — modificador de tamanho pequeno
+  ---------------------------------------------------------- */
 .btn-sm {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.8rem;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-sm);
 }

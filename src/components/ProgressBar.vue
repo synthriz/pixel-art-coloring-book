@@ -36,33 +36,4 @@ const pct = computed(() => Math.min(100, Math.round(props.value * 100)))
   </div>
 </template>
 
-<style scoped>
-.progress-wrapper {
-  padding: 0.5rem 0;
-}
-.progress-track {
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden; /* garante que a barra nao vaze fora da trilha */
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #12743e, #34c77a); /*   -> verde */
-  border-radius: 4px;
-  transition: width 0.3s ease; /* anima suavemente quando o progresso muda */
-}
-.progress-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.25rem;
-  font-size: 0.8rem;
-}
-.progress-pct {
-  color: #555;
-}
-.progress-done {
-  color: #34c77a;
-  font-weight: 700;
-}
-</style>
+<!-- todo o css desse componente foi movido pra base.css -->

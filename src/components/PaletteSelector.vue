@@ -57,41 +57,4 @@ function textColor([r, g, b]) {
   </div>
 </template>
 
-<style scoped>
-.palette-selector {
-  user-select: none; /* evita selecionar o texto dos numeros ao clicar rapido */
-}
-.palette-title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #555;
-}
-.palette-swatches {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 colunas, se adapta ao espaco disponivel */
-  gap: 4px;
-}
-.swatch {
-  aspect-ratio: 1; /* mantem o quadrado independente do tamanho */
-  border: 2px solid transparent;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.75rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.1s, border-color 0.1s;
-}
-.swatch:hover {
-  transform: scale(1.08);
-}
-.swatch--active {
-  border-color: #222;
-  box-shadow: 0 0 0 2px #12743e; /* anel   indicando selecao */
-  transform: scale(1.12);
-}
-</style>
+<!-- todo o css desse componente foi movido pra base.css -->
