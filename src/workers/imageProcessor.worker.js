@@ -51,6 +51,18 @@ self.onmessage = async (event) => {
     const gridCols = Math.max(1, Math.floor(bitmap.width / cellSize));
     const gridRows = Math.max(1, Math.floor(bitmap.height / cellSize));
 
+    // protecao: se o grid for gigante demais, cancela e avisa o usuario
+    // um grid de 200x150 ja tem 30k celulas, que e bastante
+    const MAX_CELLS = 200 * 150;
+    if (gridCols * gridRows > MAX_CELLS) {
+      self.postMessage({
+        type: "ERROR",
+        message: `Grid muito grande (${gridCols}x${gridRows}). Tente um tmanho de célula maior.`,
+      });
+      bitmap.close(); // libera a memoria do bitmap
+      return;
+    }
+
     // passo 2: redimensiona a imagem para o tamanho do grid
     // OffscreenCanvas e um canvas que funciona fora da tela (dentro do worker)
     // desenhamos a imagem original num canvas do tamanho exato do grid
