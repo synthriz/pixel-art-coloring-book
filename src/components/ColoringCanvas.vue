@@ -35,6 +35,9 @@ const ZOOM_STEP = 0.12 // incremento por scroll
 // e uma ref porque o useMousePaint precisa ler ela de forma reativa
 const isPanMode = ref(false)
 let spaceDown = false // controle interno nao-reativo (nao precisa re-renderizar a tela)
+const controlsOpen = ref(true) // controla se a barra de controle esta aberta
+const isMobile = ref(false) // controla se esta em viewport mobile
+let mobileQuery = null
 
 // = inicializa os composables ========================─
 
@@ -57,6 +60,10 @@ const { attach, detach } = useMousePaint(
 // onMounted: executado depois que o componente e inserido no dom
 // aqui o canvas ja existe, entao podemos inicializar tudo
 onMounted(() => {
+  mobileQuery = window.matchMedia('(max-width: 767px)')
+  isMobile.value = mobileQuery.matches
+  controlsOpen.value = !isMobile.value
+  mobileQuery.addEventListener('change', onViewportChange)
   init()    // inicializa o contexto 2d do canvas
   attach()  // registra os eventos de mouse/toque no canvas
   window.addEventListener('keydown', onKeyDown) // escuta espaco no nivel da janela
@@ -70,6 +77,7 @@ onUnmounted(() => {
   destroy()  // cancela o requestAnimationFrame pendente
   window.removeEventListener('keydown', onKeyDown)
   window.removeEventListener('keyup', onKeyUp)
+  mobileQuery?.removeEventListener('change', onViewportChange)
 })
 
 // = watchers =================================
@@ -161,6 +169,16 @@ function fitToViewport() {
   panX.value = (vw - cw * scale) / 2
   panY.value = (vh - ch * scale) / 2
 }
+
+function toggleControls() {
+  if (!isMobile.value) return
+  controlsOpen.value = !controlsOpen.value
+}
+
+function onViewportChange(e) {
+  isMobile.value = e.matches
+  controlsOpen.value = !e.matches
+}
 </script>
 
 <template>
@@ -176,14 +194,28 @@ function fitToViewport() {
       @wheel.prevent="onWheel"
     >
       <!-- barra de controles de zoom/pan sobreposta ao canvas -->
-      <div class="view-controls glass-surface">
-        <!-- botoes de zoom in/out pelos botoes => cada clique e 3x o ZOOM_STEP -->
-        <button class="btn-view" @click="zoom = Math.min(MAX_ZOOM, zoom + ZOOM_STEP * 3)">+</button>
-        <span class="zoom-label">{{ Math.round(zoom * 100) }}%</span>
-        <button class="btn-view" @click="zoom = Math.max(MIN_ZOOM, zoom - ZOOM_STEP * 3)">−</button>
-        <button class="btn-view" @click="resetView" title="100%">1:1</button>
-        <button class="btn-view" @click="fitToViewport" title="Encaixar">⊡</button>
-        <span class="pan-hint">Scroll = zoom · Espaço+drag ou botão do meio = mover</span>
+      <div class="view-controls glass-surface" :class="{ 'view-controls--collapsed': isMobile && !controlsOpen }">
+        <button
+          v-if="isMobile"
+          class="view-controls-toggle"
+          type="button"
+          @click="toggleControls"
+          :aria-expanded="controlsOpen"
+          :aria-label="controlsOpen ? 'ocultar controles de zoom' : 'mostrar controles de zoom'"
+          :title="controlsOpen ? 'Ocultar controles' : 'Mostrar controles'"
+        >
+          <span aria-hidden="true">{{ controlsOpen ? '✕' : '☰' }}</span>
+        </button>
+
+        <div v-show="!isMobile || controlsOpen" class="view-controls-content">
+          <!-- botoes de zoom in/out pelos botoes => cada clique e 3x o ZOOM_STEP -->
+          <button class="btn-view" @click="zoom = Math.min(MAX_ZOOM, zoom + ZOOM_STEP * 3)">+</button>
+          <span class="zoom-label">{{ Math.round(zoom * 100) }}%</span>
+          <button class="btn-view" @click="zoom = Math.max(MIN_ZOOM, zoom - ZOOM_STEP * 3)">−</button>
+          <button class="btn-view" @click="resetView" title="100%">1:1</button>
+          <button class="btn-view" @click="fitToViewport" title="Encaixar">⊡</button>
+          <span v-if="!isMobile" class="pan-hint">Scroll = zoom · Espaço+drag ou botão do meio = mover</span>
+        </div>
       </div>
 
       <!--
