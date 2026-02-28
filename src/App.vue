@@ -40,7 +40,7 @@ function toggleTheme() {
   <div class="app-layout">
 
     <!-- header fixo no topo -->
-    <header class="app-header glass-surface">
+    <header class="app-header glass-surface--simple">
       <h1 class="app-title">Coloring pixelbook =]</h1>
       <button
         class="btn-theme-toggle"
