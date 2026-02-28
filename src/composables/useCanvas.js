@@ -124,9 +124,9 @@ export function useCanvas(canvasRef, displayCellSize = 24) {
 
     // --- 1. fundo da celula ---
     if (!isPainted) {
-      ctx.fillStyle = "#ffffff"; // vazia = branco
+      ctx.fillStyle = "#FAFAFA"; // vazia = branco
     } else {
-      ctx.fillStyle = palette[paintedIdx]?.hex ?? "#ffffff"; // cor pintada
+      ctx.fillStyle = palette[paintedIdx]?.hex ?? "#FAFAFA"; // cor pintada
     }
     ctx.fillRect(x, y, cs, cs); // preenche o quadrado
 
@@ -161,7 +161,7 @@ export function useCanvas(canvasRef, displayCellSize = 24) {
       ctx.textBaseline = "middle";
 
       // sombra branca atras do numero (deslocada 1px) pra dar legibilidade
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = "#FAFAFA";
       ctx.fillText(String(targetIdx + 1), x + cs / 2 + 1, y + cs / 2 + 1);
 
       // numero em laranja/vermelho na frente
