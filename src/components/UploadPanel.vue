@@ -6,6 +6,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useColoringStore } from '@/stores/coloring'
+import { Image } from 'lucide-vue-next'
 
 const store = useColoringStore()
 
@@ -93,7 +94,7 @@ function onDrop(e) {
 
     <!-- estado vazio: mostra icone e texto de instrucao -->
     <div v-if="!store.sourceBitmap" class="upload-placeholder" @click="triggerFileInput">
-      <div class="upload-icon">Sua imagem</div>
+      <div class="upload-icon"><Image/></div>
       <p class="upload-text">Clique ou arraste uma imagem (JPG / PNG)</p>
     </div>
 

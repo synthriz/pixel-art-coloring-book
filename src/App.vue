@@ -12,6 +12,7 @@ import ControlPanel from '@/components/ControlPanel.vue'
 import PaletteSelector from '@/components/PaletteSelector.vue'
 import ColoringCanvas from '@/components/ColoringCanvas.vue'
 import ExportButton from '@/components/ExportButton.vue'
+import { Moon, Sun } from 'lucide-vue-next'
 
 // acessa a store global
 const store = useColoringStore()
@@ -48,8 +49,8 @@ function toggleTheme() {
         :title="isDark ? 'Modo claro' : 'Modo escuro'"
         :aria-label="isDark ? 'Ativar modo claro' : 'Ativar modo escuro'"
       >
-        <span v-if="isDark" aria-hidden="true">☀︎</span>
-        <span v-else aria-hidden="true">☽</span>
+        <Sun v-if="isDark" aria-hidden="true"/>
+        <Moon v-else aria-hidden="true"/>
       </button>
     </header>
 
