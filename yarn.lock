@@ -557,6 +557,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"
   integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
 
+"@types/node@16.9.1":
+  version "16.9.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.9.1.tgz#0611b37db4246c937feef529ddcc018cf8e35708"
+  integrity sha512-QpLcX9ZSsq3YYUUnD3nFDY8H7wctAhQj/TFKL8Ya8v5fMm3CFXxo8zStsLAl780ltoYoo1WvKUVGBQK+1ifr7g==
+
 "@vitejs/plugin-vue@^6.0.4":
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-6.0.4.tgz#f571fe5aeb0be511e3bfdd43844d8eaa0738b28e"
@@ -637,6 +642,13 @@
     "@vue/compiler-dom" "3.5.29"
     "@vue/shared" "3.5.29"
 
+"@vue/devtools-api@^7.7.7":
+  version "7.7.9"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-7.7.9.tgz#999dbea50da6b00cf59a1336f11fdc2b43d9e063"
+  integrity sha512-kIE8wvwlcZ6TJTbNeU2HQNtaxLx3a84aotTITUuL/4bzfPxzajGBOoqjMhwZJ8L9qFYDU/lAYMEEm11dnZOD6g==
+  dependencies:
+    "@vue/devtools-kit" "^7.7.9"
+
 "@vue/devtools-core@^8.0.6":
   version "8.0.6"
   resolved "https://registry.yarnpkg.com/@vue/devtools-core/-/devtools-core-8.0.6.tgz#08fcb10ec079edfb0c28a6989e30af103881589e"
@@ -648,6 +660,19 @@
     nanoid "^5.1.5"
     pathe "^2.0.3"
     vite-hot-client "^2.1.0"
+
+"@vue/devtools-kit@^7.7.9":
+  version "7.7.9"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-kit/-/devtools-kit-7.7.9.tgz#bc218a815616e8987df7ab3e10fc1fb3b8706c58"
+  integrity sha512-PyQ6odHSgiDVd4hnTP+aDk2X4gl2HmLDfiyEnn3/oV+ckFDuswRs4IbBT7vacMuGdwY/XemxBoh302ctbsptuA==
+  dependencies:
+    "@vue/devtools-shared" "^7.7.9"
+    birpc "^2.3.0"
+    hookable "^5.5.3"
+    mitt "^3.0.1"
+    perfect-debounce "^1.0.0"
+    speakingurl "^14.0.1"
+    superjson "^2.2.2"
 
 "@vue/devtools-kit@^8.0.6":
   version "8.0.6"
@@ -661,6 +686,13 @@
     perfect-debounce "^2.0.0"
     speakingurl "^14.0.1"
     superjson "^2.2.2"
+
+"@vue/devtools-shared@^7.7.9":
+  version "7.7.9"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-shared/-/devtools-shared-7.7.9.tgz#fa4c096b744927081a7dda5fcf05f34b1ae6ca14"
+  integrity sha512-iWAb0v2WYf0QWmxCGy0seZNDPdO3Sp5+u78ORnyeonS6MT4PC7VPrryX2BpMJrwlDeaZ6BD4vP4XKjK0SZqaeA==
+  dependencies:
+    rfdc "^1.4.1"
 
 "@vue/devtools-shared@^8.0.6":
   version "8.0.6"
@@ -717,7 +749,7 @@ baseline-browser-mapping@^2.9.0:
   resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.10.0.tgz#5b09935025bf8a80e29130251e337c6a7fc8cbb9"
   integrity sha512-lIyg0szRfYbiy67j9KN8IyeD7q7hcmqnJ1ddWmNt19ItGpNN64mnllmxUNFIOdOm6by97jlL6wfpTTJrmnjWAA==
 
-birpc@^2.4.0, birpc@^2.6.1:
+birpc@^2.3.0, birpc@^2.4.0, birpc@^2.6.1:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/birpc/-/birpc-2.9.0.tgz#b59550897e4cd96a223e2a6c1475b572236ed145"
   integrity sha512-KrayHS5pBi69Xi9JmvoqrIgYGDkD6mcSe/i6YKi3w5kekCLzrX4+nawcXqrj2tIp50Kw/mT/s3p+GVK0A0sKxw==
@@ -864,6 +896,13 @@ hookable@^5.5.3:
   resolved "https://registry.yarnpkg.com/hookable/-/hookable-5.5.3.tgz#6cfc358984a1ef991e2518cb9ed4a778bbd3215d"
   integrity sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==
 
+image-q@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/image-q/-/image-q-4.0.0.tgz#31e075be7bae3c1f42a85c469b4732c358981776"
+  integrity sha512-PfJGVgIfKQJuq3s0tTDOKtztksibuUEbJQIYT3by6wctQo+Rdlh7ef4evJ5NCdxY4CfMbvFkocEwbl4BF8RlJw==
+  dependencies:
+    "@types/node" "16.9.1"
+
 is-docker@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/is-docker/-/is-docker-3.0.0.tgz#90093aa3106277d8a77a5910dbae71747e15a200"
@@ -972,6 +1011,11 @@ pathe@^2.0.3:
   resolved "https://registry.yarnpkg.com/pathe/-/pathe-2.0.3.tgz#3ecbec55421685b70a9da872b2cff3e1cbed1716"
   integrity sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==
 
+perfect-debounce@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/perfect-debounce/-/perfect-debounce-1.0.0.tgz#9c2e8bc30b169cc984a58b7d5b28049839591d2a"
+  integrity sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==
+
 perfect-debounce@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/perfect-debounce/-/perfect-debounce-2.1.0.tgz#e7078e38f231cb191855c3136a4423aef725d261"
@@ -986,6 +1030,13 @@ picomatch@^4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.3.tgz#796c76136d1eead715db1e7bad785dedd695a042"
   integrity sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==
+
+pinia@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/pinia/-/pinia-3.0.4.tgz#75dde12784a61e34c1fa6abcd13c1a1061c360c0"
+  integrity sha512-l7pqLUFTI/+ESXn6k3nu30ZIzW5E2WZF/LaHJEpoq6ElcLD+wduZoB2kBN19du6K/4FDpPMazY2wJr+IndBtQw==
+  dependencies:
+    "@vue/devtools-api" "^7.7.7"
 
 postcss@^8.5.6:
   version "8.5.6"

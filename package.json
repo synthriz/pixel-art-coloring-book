@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "image-q": "^4.0.0",
+    "pinia": "^3.0.4",
     "vue": "^3.5.29"
   },
   "devDependencies": {
