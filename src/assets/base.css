@@ -297,6 +297,16 @@ body {
   overflow: hidden;
   isolation: isolate;
 }
+.glass-surface--simple {
+  background-color: var(--bg-surface);
+  backdrop-filter: var(--blur-surface);
+  -webkit-backdrop-filter: var(--blur-surface);
+  /* border: 1px solid var(--border-subtle); */
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
 
 .glass-surface--deep {
   background-color: var(--bg-surface-deep);
@@ -780,8 +790,7 @@ body {
   text-align: center;
   cursor: pointer;
   background-color: transparent;
-  background-image:
-    url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='rgba(0%2c0%2c0%2c0.14)' stroke-width='1.5' stroke-dasharray='6%2c 6' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='rgba(0%2c0%2c0%2c0.24)' stroke-width='1.5' stroke-dasharray='6%2c%206' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
   transition:
     background-color var(--transition-base),
     box-shadow var(--transition-base);

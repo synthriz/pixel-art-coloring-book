@@ -76,7 +76,7 @@ function onDrop(e) {
     os eventos @dragover, @dragleave e @drop controlam o drag-and-drop
   -->
   <div
-    class="upload-panel glass-surface"
+    class="upload-panel glass-surface--simple"
     :class="{ 'upload-panel--dragover': isDragOver }"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
