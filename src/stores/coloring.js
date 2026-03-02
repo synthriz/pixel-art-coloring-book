@@ -70,32 +70,25 @@ export const useColoringStore = defineStore("coloring", {
     // progresso de 0.0 a 1.0 (porcentagem de celulas pintadas corretamente)
     progress: 0,
 
+    // array de booleanos: colorDone[i] = true quando a cor i esta 100% completa
+    // e um array reativo normal (nao Uint8Array) pra o vue detectar mudancas automaticamente
+    // o vue nao consegue rastrear mutacao direta em Uint8Array, entao usamos isso
+    colorDone: [],
+
     // contador que incrementa quando solveAll() e chamado
-    // serve pra o componente do canvas detectar que precisa redesenhar tudo
+    // serve pra o componente do canvas detectar que precisa redesenhar tudo de uma vez
     // (precisamos disso pq o Uint8Array e mutado direto, sem reatividade automatica do vue)
     paintRevision: 0,
-
-    // contador que incrementa a cada pintura individual (paintCell)
-    // usado pelo getter completedColors pra saber quando recalcular
-    // separado do paintRevision pra nao triggerar redraw total do canvas a cada pincelada
-    paletteRevision: 0,
-
-    // array de booleanos: completedColorFlags[i] = true se a cor i ja foi 100% pintada
-    // e um array reativo normal (nao Uint8Array) pra o vue detectar mudancas automaticamente
-    // atualizado explicitamente nas actions em vez de ser calculado como getter
-    /** @type {boolean[]} */
-    completedColorFlags: [],
 
     // true enquanto o worker ta processando
     workerBusy: false,
 
     // mensagem de erro do worker (null = sem erro)
-    /** @type {string | null} */
     workerError: null,
   }),
 
   // = getters ================================
-  //  no vue sao tipo propriedades computadas calculadas na hora, com cache automatico
+  // no vue sao tipo propriedades computadas => calculadas na hora, com cache automatico
   getters: {
     // true se a fase for 'ready' e o grid existir — checagem rapida usada em varios lugares
     hasGrid: (state) => state.phase === "ready" && state.targetGrid !== null,
@@ -103,37 +96,12 @@ export const useColoringStore = defineStore("coloring", {
     // total de celulas do grid (colunas vezes linhas)
     totalCells: (state) => state.gridCols * state.gridRows,
 
-    // conta quantas celulas o usuario pintou com a cor correta
-    correctCells: (state) => {
-      if (!state.paintedGrid || !state.targetGrid) return 0;
-      let count = 0;
-      for (let i = 0; i < state.paintedGrid.length; i++) {
-        if (state.paintedGrid[i] === state.targetGrid[i]) count++;
-      }
-      return count;
-    },
-
     // retorna uma funcao que verifica se uma celula especifica foi pintada certo
     // ex: store.isCellCorrect(42) retorna true ou false
-    /** @returns {(cellIdx: number) => boolean} */
-    isCellCorrect: (state) => (cellIdx) => {
-      return (
-        state.paintedGrid !== null &&
-        state.targetGrid !== null &&
-        state.paintedGrid[cellIdx] === state.targetGrid[cellIdx]
-      );
-    },
-
-    // retorna um Set com os indices das cores completadas
-    // construido a partir do array reativo completedColorFlags
-    // o Set e so pra facilitar o .has() no template — O(1) em vez de array[i]
-    completedColors: (state) => {
-      const done = new Set();
-      for (let i = 0; i < state.completedColorFlags.length; i++) {
-        if (state.completedColorFlags[i]) done.add(i);
-      }
-      return done;
-    },
+    isCellCorrect: (state) => (cellIdx) =>
+      state.paintedGrid !== null &&
+      state.targetGrid !== null &&
+      state.paintedGrid[cellIdx] === state.targetGrid[cellIdx],
   },
 
   // = actions ================================
@@ -152,36 +120,12 @@ export const useColoringStore = defineStore("coloring", {
     setCellSize(v) {
       this.cellSize = Number(v);
     },
-
     setPaletteSize(v) {
       this.paletteSize = Number(v);
     },
-
     setSelectedColor(idx) {
       this.selectedColor = idx;
     },
-
-    // avanca automaticamente pra proxima cor que ainda tem celulas pra pintar
-    // e chamado logo apos uma cor ser completada
-    // parte da cor atual e vai pra frente, ciclando pela paleta
-    // se todas as cores estiverem completas, nao faz nada
-    advanceToNextColor() {
-      if (this.selectedColor === null || this.palette.length === 0) return;
-
-      const total = this.palette.length;
-      const done  = this.completedColors; // o getter que calculamos acima
-
-      // tenta cada cor a partir da proxima, em ordem circular
-      for (let offset = 1; offset <= total; offset++) {
-        const candidate = (this.selectedColor + offset) % total;
-        if (!done.has(candidate)) {
-          this.selectedColor = candidate;
-          return;
-        }
-      }
-      // se chegou aqui, todas as cores estao completas — nao muda nada
-    },
-
     toggleCorrectMode() {
       this.correctMode = !this.correctMode;
     },
@@ -202,8 +146,10 @@ export const useColoringStore = defineStore("coloring", {
       this.palette = palette;
       this.selectedColor = 0; // ja seleciona a primeira cor por padrao
       this.progress = 0;
-      // inicializa o array de flags com false pra cada cor da paleta
-      this.completedColorFlags = new Array(palette.length).fill(false);
+
+      // inicializa todas as cores como nao-completas
+      this.colorDone = new Array(palette.length).fill(false);
+
       this.phase = "ready";
       this.workerBusy = false;
       this.workerError = null;
@@ -211,13 +157,12 @@ export const useColoringStore = defineStore("coloring", {
 
     // tenta pintar uma celula com a cor selecionada
     // retorna true se algo mudou (para o canvas saber que precisa redesenhar)
-    // tambem avanca automaticamente pra proxima cor se a atual for completada
     paintCell(cellIdx) {
       if (this.selectedColor === null || !this.targetGrid || !this.paintedGrid)
         return false;
       if (cellIdx < 0 || cellIdx >= this.targetGrid.length) return false;
 
-      const target  = this.targetGrid[cellIdx];  // cor correta dessa celula
+      const target = this.targetGrid[cellIdx]; // cor correta dessa celula
       const current = this.paintedGrid[cellIdx]; // cor que esta pintada agora (255 = vazia)
 
       // se modo correto ativado e a cor selecionada nao e a certa, bloqueia
@@ -225,10 +170,9 @@ export const useColoringStore = defineStore("coloring", {
 
       // se a celula esta pintada errado (tem cor, mas nao e a certa)
       // clicar nela de novo apaga — funciona como toggle
-      const isWrong = current !== 255 && current !== target;
-      if (isWrong) {
+      if (current !== 255 && current !== target) {
         this.paintedGrid[cellIdx] = 255; // volta pra vazia
-        this._recalcProgress();
+        this._recalc();
         return true;
       }
 
@@ -237,12 +181,11 @@ export const useColoringStore = defineStore("coloring", {
 
       // pinta a celula com a cor selecionada
       this.paintedGrid[cellIdx] = this.selectedColor;
-      this._recalcProgress();
+      this._recalc();
 
-      // verifica se essa pintura completou a cor atual
-      // o getter completedColors recalcula na hora, entao ja reflete essa ultima pintura
-      if (this.completedColors.has(this.selectedColor)) {
-        this.advanceToNextColor();
+      // se essa pintura completou a cor atual, avanca pra proxima incompleta
+      if (this.colorDone[this.selectedColor]) {
+        this._nextColor();
       }
 
       return true;
@@ -255,44 +198,53 @@ export const useColoringStore = defineStore("coloring", {
       for (let i = 0; i < this.targetGrid.length; i++) {
         this.paintedGrid[i] = this.targetGrid[i]; // copia o gabarito pro grid pintado
       }
-      // _recalcProgress ja atualiza progress, completedColorFlags e paletteRevision
-      this._recalcProgress();
-      // paintRevision avisa o canvas que precisa redesenhar tudo do zero
+      this._recalc();
+      // incrementa o contador de revisao pra avisar o canvas que precisa redesenhar tudo
+      // (o vue nao detecta mutacao direta em Uint8Array, entao usamos esse truque)
       this.paintRevision++;
     },
 
-    // recalcula o progresso e as flags de cores completas
-    // chamado internamente toda vez que uma celula e pintada
-    _recalcProgress() {
-      const total = this.totalCells;
-      if (total === 0) {
-        this.progress = 0;
-        return;
-      }
+    // recalcula o progresso geral e o colorDone de cada cor
+    // percorre o grid uma unica vez calculando tudo junto — mais eficiente do que duas passadas
+    // chamado toda vez que uma celula e pintada ou apagada
+    _recalc() {
+      if (!this.paintedGrid || !this.targetGrid) return;
 
-      // percorre o grid uma unica vez calculando tudo junto
-      const colorTotal   = new Array(this.palette.length).fill(0);
-      const colorCorrect = new Array(this.palette.length).fill(0);
-      let correct = 0;
+      const nColors = this.palette.length;
+      const total = new Array(nColors).fill(0); // quantas celulas tem cada cor
+      const correct = new Array(nColors).fill(0); // quantas estao certas por cor
+      let allRight = 0;
 
       for (let i = 0; i < this.paintedGrid.length; i++) {
-        const targetColor = this.targetGrid[i];
-        colorTotal[targetColor]++;
-        if (this.paintedGrid[i] === targetColor) {
-          correct++;
-          colorCorrect[targetColor]++;
+        const t = this.targetGrid[i];
+        total[t]++;
+        if (this.paintedGrid[i] === t) {
+          correct[t]++;
+          allRight++;
         }
       }
 
-      this.progress = correct / total;
+      this.progress = allRight / this.totalCells; // ex: 0.75 = 75% completo
 
-      // atualiza o array reativo de flags — o vue detecta mudanca em array normal
-      // isso e mais confiavel do que tentar fazer um getter depender de Uint8Array
-      for (let c = 0; c < this.palette.length; c++) {
-        this.completedColorFlags[c] = colorTotal[c] > 0 && colorCorrect[c] === colorTotal[c];
+      // atualiza colorDone — array reativo normal, o vue detecta a mudanca automaticamente
+      for (let c = 0; c < nColors; c++) {
+        // total[c] > 0 garante que a cor existe no grid (paleta pode ter cores sem celulas)
+        this.colorDone[c] = total[c] > 0 && correct[c] === total[c];
       }
+    },
 
-      this.paletteRevision++; // mantemos o contador pra compatibilidade
+    // avanca pra proxima cor incompleta, em ordem circular
+    // ex: se esta na cor 3 e ela foi completada, vai pra 4, 5... voltando pro 0 se precisar
+    _nextColor() {
+      const n = this.palette.length;
+      for (let offset = 1; offset <= n; offset++) {
+        const candidate = (this.selectedColor + offset) % n;
+        if (!this.colorDone[candidate]) {
+          this.selectedColor = candidate;
+          return;
+        }
+      }
+      // se todas as cores estiverem completas, nao muda nada
     },
 
     // reseta tudo pro estado inicial — botao "nova imagem" chama isso
@@ -310,11 +262,10 @@ export const useColoringStore = defineStore("coloring", {
       this.selectedColor = null;
       this.correctMode = false;
       this.progress = 0;
+      this.colorDone = [];
+      this.paintRevision = 0;
       this.workerBusy = false;
       this.workerError = null;
-      this.paintRevision = 0;
-      this.paletteRevision = 0;
-      this.completedColorFlags = [];
     },
   },
 });
