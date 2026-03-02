@@ -243,7 +243,7 @@ function onViewportChange(e) {
             ⊡
           </button>
           <span v-if="!isMobile" class="pan-hint"
-            >Scroll = zoom · Espaço+drag ou botão do meio = mover</span
+            >Scroll = zoom | SPACE + drag ou botão do meio = mover</span
           >
         </div>
       </div>
