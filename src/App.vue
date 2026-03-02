@@ -92,7 +92,7 @@ function toggleTheme() {
         <PaletteSelector @color-selected="() => {}" />
 
         <!-- opcao de modo correto: so pinta celulas com a cor certa -->
-        <div class="sidebar-option">
+        <div class="sidebar-option sidebar-option--mobile">
           <label class="toggle-label">
             <!--
               :checked sincroniza o estado do checkbox com a store
