@@ -165,18 +165,13 @@ export const useColoringStore = defineStore("coloring", {
       const target = this.targetGrid[cellIdx]; // cor correta dessa celula
       const current = this.paintedGrid[cellIdx]; // cor que esta pintada agora (255 = vazia)
 
+      // celula ja esta correta => nao pode ser apagada nem repintada
+      if (current === target) return false;
+
       // se modo correto ativado e a cor selecionada nao e a certa, bloqueia
       if (this.correctMode && this.selectedColor !== target) return false;
 
-      // se a celula esta pintada errado (tem cor, mas nao e a certa)
-      // clicar nela de novo apaga — funciona como toggle
-      if (current !== 255 && current !== target) {
-        this.paintedGrid[cellIdx] = 255; // volta pra vazia
-        this._recalc();
-        return true;
-      }
-
-      // se ja tem exatamente a cor selecionada, nao faz nada
+      // se ja tem exatamente a cor selecionada (e errada), nao faz nada
       if (current === this.selectedColor) return false;
 
       // pinta a celula com a cor selecionada
