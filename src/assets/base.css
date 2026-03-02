@@ -1168,10 +1168,12 @@ body {
   margin: 0 0 var(--space-3);
 }
 
-/* grade 4 colunas — 6 no mobile */
+/* grade adaptativa — preenche a largura disponivel c swatches de no minimo 36px */
+/* auto-fill cria quantas colunas couberem, sem precisar fixar o numero */
+/* funciona pf */
 .palette-swatches {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
   gap: var(--space-2);
 }
 
@@ -1382,9 +1384,8 @@ body {
     padding: var(--space-3);
   }
 
-  /* grade de swatches vira 6 colunas em mobile pra caber mais */
+  /* gap menor no mobile pra aproveitar melhor o espaco */
   .palette-swatches {
-    grid-template-columns: repeat(6, 1fr);
     gap: var(--space-1);
   }
 }
