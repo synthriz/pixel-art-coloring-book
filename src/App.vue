@@ -5,52 +5,51 @@
   - fase 'ready': mostra a sidebar de pintura + o canvas
 -->
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useColoringStore } from '@/stores/coloring'
-import UploadPanel from '@/components/UploadPanel.vue'
-import ControlPanel from '@/components/ControlPanel.vue'
-import PaletteSelector from '@/components/PaletteSelector.vue'
-import ColoringCanvas from '@/components/ColoringCanvas.vue'
-import ExportButton from '@/components/ExportButton.vue'
-import { Moon, Sun } from 'lucide-vue-next'
+import { ref, onMounted } from "vue";
+import { useColoringStore } from "@/stores/coloring";
+import UploadPanel from "@/components/UploadPanel.vue";
+import ControlPanel from "@/components/ControlPanel.vue";
+import PaletteSelector from "@/components/PaletteSelector.vue";
+import ColoringCanvas from "@/components/ColoringCanvas.vue";
+import ExportButton from "@/components/ExportButton.vue";
+import { Moon, Sun } from "lucide-vue-next";
 
 // acessa a store global
-const store = useColoringStore()
+const store = useColoringStore();
 
 // controla o tema claro/escuro e sincroniza com o data-theme do html
-const isDark = ref(false)
+const isDark = ref(false);
 
 onMounted(() => {
-  const stored = localStorage.getItem('theme')
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  isDark.value = stored ? stored === 'dark' : prefersDark
+  const stored = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  isDark.value = stored ? stored === "dark" : prefersDark;
   // o index.html ja seta o data-theme antes do mount (prevencao de FOUC)
   // sincronizamos o ref aqui so pra o icone do botao ficar correto
-})
+});
 
 // alterna entre claro e escuro, salva no localStorage
 function toggleTheme() {
-  isDark.value = !isDark.value
-  const t = isDark.value ? 'dark' : 'light'
-  document.documentElement.setAttribute('data-theme', t)
-  localStorage.setItem('theme', t)
+  isDark.value = !isDark.value;
+  const t = isDark.value ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", t);
+  localStorage.setItem("theme", t);
 }
 </script>
 
 <template>
   <div class="app-layout">
-
     <!-- header fixo no topo -->
     <header class="app-header glass-surface--simple">
-      <h1 class="app-title">Coloring pixelbook =]</h1>
+      <h1 class="app-title">Coloring Pixelbook =]</h1>
       <button
         class="btn-theme-toggle"
         @click="toggleTheme"
         :title="isDark ? 'Modo claro' : 'Modo escuro'"
         :aria-label="isDark ? 'Ativar modo claro' : 'Ativar modo escuro'"
       >
-        <Sun v-if="isDark" aria-hidden="true"/>
-        <Moon v-else aria-hidden="true"/>
+        <Sun v-if="isDark" aria-hidden="true" />
+        <Moon v-else aria-hidden="true" />
       </button>
     </header>
 
@@ -60,11 +59,12 @@ function toggleTheme() {
     -->
     <div v-if="store.phase !== 'ready'" class="setup-view">
       <div class="setup-card glass-surface--deep">
-
         <h2 class="section-heading">1. Imagem</h2>
         <UploadPanel />
 
-        <h2 class="section-heading" style="margin-top: var(--space-6)">2. Configurações</h2>
+        <h2 class="section-heading" style="margin-top: var(--space-6)">
+          2. Configurações
+        </h2>
         <ControlPanel />
 
         <!-- spinner de carregamento enquanto o worker processa -->
@@ -76,7 +76,6 @@ function toggleTheme() {
         <div v-if="store.workerError" class="status-error">
           Erro: {{ store.workerError }}
         </div>
-
       </div>
     </div>
 
@@ -85,11 +84,9 @@ function toggleTheme() {
       v-else = mostra quando o v-if acima for falso (ou seja, fase === 'ready')
     -->
     <div v-else class="paint-view">
-
-            <!-- sidebar: paleta, opcoes e acoes -->
+      <!-- sidebar: paleta, opcoes e acoes -->
 
       <aside class="paint-sidebar glass-surface">
-
         <!-- grade de swatches de cor — emite 'colorSelected' quando o usuario clica numa cor -->
         <!-- @color-selected="() => {}" = ouve o evento mas nao precisa fazer nada aqui no pai -->
         <PaletteSelector @color-selected="() => {}" />
@@ -101,7 +98,11 @@ function toggleTheme() {
               :checked sincroniza o estado do checkbox com a store
               @change chama toggleCorrectMode quando o usuario marca/desmarca
             -->
-            <input type="checkbox" :checked="store.correctMode" @change="store.toggleCorrectMode()" />
+            <input
+              type="checkbox"
+              :checked="store.correctMode"
+              @change="store.toggleCorrectMode()"
+            />
             Apenas cores corretas
           </label>
           <p class="option-hint">
@@ -125,7 +126,9 @@ function toggleTheme() {
           </button>
 
           <!-- volta pra tela de setup e reseta tudo -->
-          <button class="btn-secondary" @click="store.reset()">Nova imagem</button>
+          <button class="btn-secondary" @click="store.reset()">
+            Nova imagem
+          </button>
         </div>
 
         <!-- informacoes do grid atual -->
@@ -139,14 +142,23 @@ function toggleTheme() {
             <span>{{ store.totalCells }}</span>
           </div>
         </div>
-
       </aside>
 
       <!-- area principal: o canvas de pintura -->
       <main class="paint-main">
         <ColoringCanvas />
       </main>
-
     </div>
+    <!-- footer fixo no canto inferior direito -->
+    <footer class="app-footer">
+      <a
+        href="https://trizdev.vercel.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-link"
+      >
+        made by Beatriz Tavares =]
+      </a>
+    </footer>
   </div>
 </template>
