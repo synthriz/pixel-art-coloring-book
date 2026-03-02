@@ -150,7 +150,7 @@ function toggleTheme() {
       </main>
     </div>
     <!-- footer fixo no canto inferior direito -->
-    <footer class="app-footer">
+    <footer class="app-footer glass-surface--simple">
       <a
         href="https://trizdev.vercel.app"
         target="_blank"
