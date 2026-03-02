@@ -1,13 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#cdc9c2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#161514" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="Paint by Number — pixel art coloring book" />
-    <title>Coloring Pixelbook da Triz</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="theme-color"
+      content="#cdc9c2"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#161514"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="description"
+      content="Paint by Number — pixel art coloring book :3"
+    />
+    <title>Coloring Pixelbook</title>
     <!-- fontchy -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,15 +32,17 @@
     <!-- prevenir piscar do tema errado (fouc) — executa antes do app renderizar -->
     <script>
       (function () {
-        var stored = localStorage.getItem('theme');
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = stored || (prefersDark ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', theme);
+        var stored = localStorage.getItem("theme");
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        var theme = stored || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
   </head>
   <body>
-        <!-- camada de fundo fixa — manchas radiais fornecem ao backdrop-filter algo p desfocar.
+    <!-- camada de fundo fixa — manchas radiais fornecem ao backdrop-filter algo p desfocar.
         deve ficar fora de #app para ficar atras de todo o conteudo do Vue. -->
     <div id="bg-layer" aria-hidden="true"></div>
     <div id="app"></div>
