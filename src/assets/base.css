@@ -1386,36 +1386,81 @@ body {
     grid-template-rows: 1fr auto;
   }
 
-  /* sidebar vira bottom sheet horizontal com scroll */
+  /* sidebar vira uma faixa fina no bottom — altura automatica pelo conteudo */
+  /* sem max-height: o canvas pega todo o espaco restante acima */
   .paint-sidebar {
     grid-row: 2;
     border-right: none;
     border-top: 1px solid var(--border-subtle);
-    max-height: 42vh;
+    /* padding lateral maior pra o ring de focus dos swatches nao ser cortado */
     padding: var(--space-3) var(--space-4)
-      calc(var(--space-4) + env(safe-area-inset-bottom));
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    align-content: flex-start;
+      calc(var(--space-3) + env(safe-area-inset-bottom));
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    overflow: hidden;           /* necessario pra o overflow-x: auto do filho funcionar */
   }
 
-  /* cada filho da sidebar ocupa a largura toda no modo horizontal */
+  /* cada filho da sidebar ocupa a largura toda */
   .paint-sidebar > * {
     width: 100%;
+    flex-shrink: 0;
   }
 
-  /* info do grid perde o margin-top: auto no bottom sheet */
-  .paint-sidebar .sidebar-info {
-    margin-top: 0;
+  /* titulo "paleta" some no mobile pra economizar espaco */
+  .palette-title {
+    display: none;
+  }
+
+  /* paleta em linha unica horizontal com scroll */
+  /* padding vertical extra pra o ring de focus (4px outline) nao ser cortado pelo overflow:hidden do pai */
+  .palette-swatches {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-2) var(--space-3); /* top/side/bottom — bottom maior pro focus ring */
+    scrollbar-width: none;
+  }
+
+  .palette-swatches::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* cada swatch tem tamanho fixo na linha horizontal */
+  .swatch {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  /* botoes de acao ficam em linha compacta no mobile */
+  .sidebar-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+  }
+
+  /* cada botao divide o espaco igualmente, texto pequeno e compacto */
+  .sidebar-actions > * {
+    flex: 1;
+    min-width: 0;
+    font-size: 11px;
+    padding: var(--space-2) var(--space-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* info e opcoes ficam escondidos no mobile pra nao poluir */
+  .sidebar-option,
+  .sidebar-info {
+    display: none;
   }
 
   .paint-main {
-    padding: var(--space-3);
-  }
-
-  /* gap menor no mobile pra aproveitar melhor o espaco */
-  .palette-swatches {
-    gap: var(--space-1);
+    padding: var(--space-2);
   }
 }

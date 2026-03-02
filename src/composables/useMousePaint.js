@@ -26,6 +26,13 @@ export function useMousePaint(
   let isPanning = false; // true enquanto o usuario esta arrastando pra mover (espaco+drag ou botao do meio)
   let lastPaintedIdx = -1; // ultimo indice pintado durante um arrasto (evita repintar a mesma celula)
 
+  // pendingPaint: posicao do toque inicial aguardando o threshold de movimento
+  // resolve dois problemas:
+  // 1) pinch acidental => se um segundo dedo chegar antes do threshold, cancela sem pintar nada
+  // 2) tap vs drag => so confirma a pintura depois de mover um pouco (ou ao levantar o dedo)
+  let pendingPaint = null; // { x, y } ou null
+  const PAINT_THRESHOLD = 6; // pixels que o dedo precisa mover antes de comecar a pintar
+
   // variaveis de pan => guardam o ponto de inicio do arrasto
   let panStartX = 0;
   let panStartY = 0;
@@ -150,8 +157,10 @@ export function useMousePaint(
     // = dois dedos: entra no modo pinch ==============
     if (activePointers.size >= 2) {
       // cancela qualquer pintura ou pan que estava em andamento
+      // pendingPaint = null garante que nao vai pintar nada ao sair do pinch
       isPainting = false;
       isPanning = false;
+      pendingPaint = null;
       lastPaintedIdx = -1;
 
       // inicia o pinch: salva distancia e ponto medio iniciais
@@ -184,10 +193,13 @@ export function useMousePaint(
     // no touch (pointerType === 'touch'), button sempre e 0, entao passa direto
     if (e.button !== 0 && e.pointerType !== "touch") return;
 
-    // inicia pintura
+    // inicia pintura => guarda a posicao inicial mas NAO pinta ainda
+    // so vai pintar quando o dedo mover alem do threshold, ou ao levantar (tap)
+    // isso evita pintura acidental durante pinch: se um segundo dedo chegar
+    // antes do threshold, o pendingPaint e cancelado sem pintar nada
     isPainting = true;
-    lastPaintedIdx = -1; // reseta pra permitir clicar na mesma celula de novo
-    tryPaint(e.clientX, e.clientY, false); // false = nao e arrasto, e um toque/clique novo
+    pendingPaint = { x: e.clientX, y: e.clientY };
+    lastPaintedIdx = -1;
   }
 
   function onPointerMove(e) {
@@ -231,6 +243,18 @@ export function useMousePaint(
 
     // = modo pintura: arrasto normal ================
     if (!isPainting) return;
+
+    // se ainda esta aguardando o threshold, verifica se o dedo moveu o suficiente
+    if (pendingPaint) {
+      const dx = e.clientX - pendingPaint.x;
+      const dy = e.clientY - pendingPaint.y;
+      if (Math.hypot(dx, dy) < PAINT_THRESHOLD) return; // ainda nao moveu o suficiente
+
+      // threshold atingido: pinta a celula inicial e libera o drag normal
+      tryPaint(pendingPaint.x, pendingPaint.y, false);
+      pendingPaint = null;
+    }
+
     tryPaint(e.clientX, e.clientY, true); // true = e um arrasto, deduplica celulas repetidas
   }
 
@@ -262,7 +286,14 @@ export function useMousePaint(
       }
     }
 
+    // tap rapido: o dedo levantou sem ter atingido o threshold de movimento
+    // pinta a celula do toque original (comportamento de clique/tap normal)
+    if (isPainting && pendingPaint) {
+      tryPaint(pendingPaint.x, pendingPaint.y, false);
+    }
+
     // encerra pintura
+    pendingPaint = null;
     isPainting = false;
     lastPaintedIdx = -1;
   }
