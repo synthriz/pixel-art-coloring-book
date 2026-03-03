@@ -112,10 +112,9 @@ export function useMousePaint(
   function applyPinch(scaleFactor, midX, midY, deltaMidX, deltaMidY) {
     if (!zoomRef || !panRefs) return;
 
-    const newZoom = Math.min(
-      MAX_ZOOM,
-      Math.max(MIN_ZOOM, zoomRef.value * scaleFactor),
-    );
+    // clamp no scaleFactor pra evitar saltos quando os dedos estao muito proximos
+    const clampedScale = Math.min(Math.max(scaleFactor, 0.85), 1.15);
+    const newZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoomRef.value * clampedScale));
 
     // zoom centrado no ponto medio dos dedos
     // mesma formula do onWheel em ColoringCanvas.vue
@@ -129,12 +128,12 @@ export function useMousePaint(
       originY = midY - rect.top;
     }
 
-    const scale = newZoom / zoomRef.value;
-    panRefs.panX.value = originX - scale * (originX - panRefs.panX.value);
-    panRefs.panY.value = originY - scale * (originY - panRefs.panY.value);
+    const actualScale = newZoom / zoomRef.value;
+    panRefs.panX.value = originX - actualScale * (originX - panRefs.panX.value);
+    panRefs.panY.value = originY - actualScale * (originY - panRefs.panY.value);
     zoomRef.value = newZoom;
 
-    // pan adicional: traduz o canvas pelo quanto o ponto medio dos dedos se moveu
+    // pan pelo movimento do ponto medio dos dedos (arrastar com dois dedos)
     panRefs.panX.value += deltaMidX;
     panRefs.panY.value += deltaMidY;
   }
@@ -217,7 +216,8 @@ export function useMousePaint(
       const midX = (p1.x + p2.x) / 2;
       const midY = (p1.y + p2.y) / 2;
 
-      if (pinchLastDist > 0) {
+      // so aplica se a distancia anterior for valida e razoavel (evita divisao por zero e saltos)
+      if (pinchLastDist > 10) {
         // scaleFactor > 1 = dedos afastando = zoom in
         // scaleFactor < 1 = dedos juntando  = zoom out
         const scaleFactor = dist / pinchLastDist;
