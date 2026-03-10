@@ -1398,7 +1398,7 @@ body {
     flex-direction: column;
     flex-wrap: nowrap;
     gap: var(--space-2);
-    overflow: hidden;           /* necessario pra o overflow-x: auto do filho funcionar */
+    overflow: hidden; /* necessario pra o overflow-x: auto do filho funcionar */
   }
 
   /* cada filho da sidebar ocupa a largura toda */
@@ -1468,6 +1468,145 @@ body {
 
   .sidebar-option--mobile {
     padding: var(--space-2) 0;
+  }
+
+  .paint-main {
+    padding: var(--space-2);
+  }
+}
+
+/* ----------------------------------------------------------
+   janela baixa (desktop landscape ou browser com UI grande)
+  paleta vira scroll horizontal + botões menores
+   ---------------------------------------------------------- */
+@media (min-width: 768px) and (max-height: 600px) {
+  /* sidebar com scroll vertical pra não cortar nada */
+  .paint-sidebar {
+    overflow-y: auto;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-3);
+  }
+
+  /* paleta continua em grid => usuário tem mouse, não precisa de scroll horizontal */
+  /* swatches menores pra caber mais em menos altura */
+  .palette-swatches {
+    grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
+    gap: var(--space-1);
+  }
+
+  .swatch {
+    font-size: 10px;
+  }
+
+  /* botões menores */
+  .sidebar-actions > * {
+    font-size: var(--text-xs);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* hint do toggle some pra economizar espaço */
+  .option-hint {
+    display: none;
+  }
+
+  /* view-controls mais compacta — hint de teclado some */
+  .pan-hint {
+    display: none;
+  }
+
+  .view-controls {
+    padding: var(--space-1);
+  }
+}
+
+/* ----------------------------------------------------------
+   LANDSCAPE MOBILE => tela girada (largura > altura, altura < 500px)
+   usa sidebar lateral fina em vez de bottom bar, pra aproveitar a largura
+   ---------------------------------------------------------- */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  /* header menor pra economizar altura */
+  .app-header {
+    height: 40px;
+    padding: 0 var(--space-4);
+  }
+
+  /* ajusta o padding-top do paint-view pro header menor */
+  .paint-view {
+    padding-top: 40px;
+    grid-template-columns: 180px 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  /* sidebar lateral fina com scroll vertical */
+  .paint-sidebar {
+    grid-row: unset;
+    border-right: 1px solid var(--border-subtle);
+    border-top: none;
+    padding: var(--space-2) var(--space-3)
+      calc(var(--space-2) + env(safe-area-inset-bottom));
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* filhos ocupam a largura toda da sidebar */
+  .paint-sidebar > * {
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  /* paleta em grid 4 colunas (compacto) em vez de scroll horizontal */
+  .palette-swatches {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-1);
+    padding: var(--space-1);
+    overflow-x: unset;
+    flex-direction: unset;
+    flex-wrap: unset;
+  }
+
+  .palette-swatches::-webkit-scrollbar {
+    display: unset;
+  }
+
+  /* swatches menores pra caber em 4 colunas na sidebar estreita */
+  .swatch {
+    width: auto;
+    height: auto;
+    aspect-ratio: 1;
+    flex-shrink: unset;
+  }
+
+  /* titulo da paleta volta a aparecer (temos espaço vertical) */
+  .palette-title {
+    display: block;
+    font-size: 10px;
+  }
+
+  /* toggle visível normalmente */
+  .sidebar-option:not(.sidebar-option--mobile) {
+    display: flex;
+  }
+
+  .sidebar-option--mobile {
+    display: none;
+  }
+
+  /* botoes em coluna compacta */
+  .sidebar-actions {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: var(--space-1);
+  }
+
+  .sidebar-actions > * {
+    flex: unset;
+    width: 100%;
+    font-size: 11px;
+    padding: var(--space-1) var(--space-2);
   }
 
   .paint-main {
