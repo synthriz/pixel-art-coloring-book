@@ -9,6 +9,40 @@ import { defineStore } from "pinia";
  * @typedef {{ index: number, rgb: [number,number,number], hex: string }} PaletteEntry
  */
 
+const STORAGE_KEY = "coloring-pixelbook-session";
+let saveDebounceTimer = null;
+const SAVE_DEBOUNCE_MS = 800;
+
+// Uint8Array nao serializa direto em JSON => converte p Base64 string
+function uint8ToBase64(arr) {
+  return btoa(String.fromCharCode(...arr));
+}
+
+// inverso: Base64 string => Uint8Array
+function base64ToUint8(str) {
+  return new Uint8Array([...atob(str)].map((c) => c.charCodeAt(0)));
+}
+
+// converte File pra data URL (Promise) pra poder salvar no localStorage
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// reconstrói um ImageBitmap a partir de uma data URL
+function dataUrlToBitmap(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => createImageBitmap(img).then(resolve).catch(reject);
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
 export const useColoringStore = defineStore("coloring", {
   // = state =================================
   // tudo que o app precisa guardar, e o "estado" da aplicacao
@@ -153,6 +187,7 @@ export const useColoringStore = defineStore("coloring", {
       this.phase = "ready";
       this.workerBusy = false;
       this.workerError = null;
+      this.saveToStorage();
     },
 
     // tenta pintar uma celula com a cor selecionada
@@ -183,6 +218,7 @@ export const useColoringStore = defineStore("coloring", {
         this._nextColor();
       }
 
+      this._debouncedSave();
       return true;
     },
 
@@ -197,6 +233,7 @@ export const useColoringStore = defineStore("coloring", {
       // incrementa o contador de revisao pra avisar o canvas que precisa redesenhar tudo
       // (o vue nao detecta mutacao direta em Uint8Array, entao usamos esse truque)
       this.paintRevision++;
+      this._debouncedSave();
     },
 
     // recalcula o progresso geral e o colorDone de cada cor
@@ -261,6 +298,93 @@ export const useColoringStore = defineStore("coloring", {
       this.paintRevision = 0;
       this.workerBusy = false;
       this.workerError = null;
+      localStorage.removeItem(STORAGE_KEY);
+    },
+
+    // agenda um save com debounce p evita salvar a cada pixel durante o drag
+    // (explodiu)
+    _debouncedSave() {
+      clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = setTimeout(
+        () => this.saveToStorage(),
+        SAVE_DEBOUNCE_MS,
+      );
+    },
+
+    // salva o estado atual no localStorage
+    // chamado apos cada pintura e ao concluir o processamento
+    async saveToStorage() {
+      if (this.phase !== "ready" || !this.targetGrid || !this.paintedGrid)
+        return;
+
+      try {
+        // imagem original como data URL => unica forma de serializar File/Bitmap
+        let sourceDataUrl = null;
+        if (this.sourceFile) {
+          sourceDataUrl = await fileToDataUrl(this.sourceFile);
+        }
+
+        const snapshot = {
+          phase: this.phase,
+          cellSize: this.cellSize,
+          paletteSize: this.paletteSize,
+          sourceWidth: this.sourceWidth,
+          sourceHeight: this.sourceHeight,
+          sourceDataUrl,
+          gridCols: this.gridCols,
+          gridRows: this.gridRows,
+          palette: this.palette,
+          selectedColor: this.selectedColor,
+          correctMode: this.correctMode,
+          targetGrid: uint8ToBase64(this.targetGrid),
+          paintedGrid: uint8ToBase64(this.paintedGrid),
+        };
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+      } catch (e) {
+        // localStorage pode falhar por quota ou modo privado, lanca falha silenciosa
+        console.warn("[coloring] nao foi possivel salvar no localStorage:", e);
+      }
+    },
+
+    // restaura o estado salvo do localStorage
+    // chamado uma vez no boot do app (main.js), antes de montar o Vue
+    async loadFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+
+        const snapshot = JSON.parse(raw);
+        if (snapshot.phase !== "ready") return;
+
+        // restaura os Uint8Arrays do Base64
+        this.targetGrid = base64ToUint8(snapshot.targetGrid);
+        this.paintedGrid = base64ToUint8(snapshot.paintedGrid);
+
+        // restaura os campos simples
+        this.cellSize = snapshot.cellSize;
+        this.paletteSize = snapshot.paletteSize;
+        this.sourceWidth = snapshot.sourceWidth;
+        this.sourceHeight = snapshot.sourceHeight;
+        this.gridCols = snapshot.gridCols;
+        this.gridRows = snapshot.gridRows;
+        this.palette = snapshot.palette;
+        this.selectedColor = snapshot.selectedColor;
+        this.correctMode = snapshot.correctMode;
+
+        // reconstrói o bitmap da data URL pra mostrar no preview (se houver)
+        if (snapshot.sourceDataUrl) {
+          this.sourceBitmap = await dataUrlToBitmap(snapshot.sourceDataUrl);
+        }
+
+        this.colorDone = new Array(this.palette.length).fill(false);
+        this._recalc();
+        this.phase = "ready";
+      } catch (e) {
+        // snapshot corrompido ou incompleto: ignora e começa do zero
+        console.warn("[coloring] snapshot invalido, ignorando:", e);
+        localStorage.removeItem(STORAGE_KEY);
+      }
     },
   },
 });
