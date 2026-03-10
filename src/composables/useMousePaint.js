@@ -6,7 +6,7 @@
 import { useColoringStore } from "@/stores/coloring";
 
 // limites de zoom => espelhados do ColoringCanvas.vue pra usar no pinch
-const MIN_ZOOM = 0.15;
+const MIN_ZOOM = 0.05;
 const MAX_ZOOM = 4;
 
 export function useMousePaint(
@@ -112,9 +112,7 @@ export function useMousePaint(
   function applyPinch(scaleFactor, midX, midY, deltaMidX, deltaMidY) {
     if (!zoomRef || !panRefs) return;
 
-    // clamp no scaleFactor pra evitar saltos quando os dedos estao muito proximos
-    const clampedScale = Math.min(Math.max(scaleFactor, 0.85), 1.15);
-    const newZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoomRef.value * clampedScale));
+    const newZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoomRef.value * scaleFactor));
 
     // zoom centrado no ponto medio dos dedos
     // mesma formula do onWheel em ColoringCanvas.vue
