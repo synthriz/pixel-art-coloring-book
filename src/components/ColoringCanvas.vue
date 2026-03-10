@@ -27,7 +27,7 @@ const viewportRef = ref(null);
 const zoom = ref(1);
 const panX = ref(0);
 const panY = ref(0);
-const MIN_ZOOM = 0.15; // 15% => limite minimo pra nao sumir
+const MIN_ZOOM = 0.05; // 5% => limite minimo pra nao sumir
 const MAX_ZOOM = 4; // 400% => limite maximo
 const ZOOM_STEP = 0.12; // incremento por scroll
 
@@ -174,8 +174,8 @@ function fitToViewport() {
   const ch = canvasRef.value.height;
   if (!cw || !ch) return;
 
-  // pega o menor fator que faz o canvas caber, limitado a 1 (nao amplia, so reduz)
-  const scale = Math.min(vw / cw, vh / ch, 1);
+  // pega o menor fator que faz o canvas caber, respeitando os limites de zoom
+  const scale = Math.min(Math.max(vw / cw, vh / ch, MIN_ZOOM), MAX_ZOOM);
   zoom.value = scale;
 
   // centraliza o canvas no viewport
