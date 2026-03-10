@@ -117,6 +117,11 @@ watch(
 function onKeyDown(e) {
   // espaco ativa o modo pan => !e.repeat evita repetir enquanto segura
   if (e.code === "Space" && !e.repeat) {
+    // se o foco esta em um botao/input tira o foco antes de ativar o pan
+    // evita que o espaco dispare o click do elemento focado enqt arrasta
+    const focused = document.activeElement;
+    if (focused && focused !== document.body) focused.blur();
+
     spaceDown = true;
     isPanMode.value = true;
     if (canvasRef.value) canvasRef.value.style.cursor = "grab";
