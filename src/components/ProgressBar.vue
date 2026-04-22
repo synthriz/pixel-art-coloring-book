@@ -5,6 +5,18 @@
 <script setup>
 import { computed } from "vue";
 
+// textos que julguei engraçadinhos pra mostrar qdo chegar a 100 ;-;
+const progressDoneText = [
+  "Arrasou!",
+  "Picasso estaria orgulhoso.",
+  "Que obra de arte, hein?",
+  "Já pode colocar na moldura!",
+  "Zero defeitos. Virou arte!",
+  "Parabéns! Santa paciência, hein?",
+  "Obra de arte concluída!",
+  "Digno de museu!",
+  "Ficou lindo!",
+];
 // defineProps declara as props que esse componente aceita do pai
 const props = defineProps({
   value: {
@@ -29,7 +41,9 @@ const pct = computed(() => Math.min(100, Math.round(props.value * 100)));
     <div class="progress-labels">
       <span class="progress-pct">{{ pct }}% completo</span>
       <!-- v-if so mostra a mensagem de parabens quando chega a 100% -->
-      <span v-if="pct === 100" class="progress-done">Boa, conseguiu!</span>
+      <span v-if="pct === 100" class="progress-done">{{
+        progressDoneText[Math.floor(Math.random() * progressDoneText.length)]
+      }}</span>
     </div>
   </div>
 </template>

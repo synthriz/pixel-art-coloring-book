@@ -495,11 +495,12 @@ body {
 
 /* titulo do app no header */
 .app-title {
+  text-transform: uppercase;
   margin: 0;
   font-size: var(--text-lg);
   font-weight: 600;
   letter-spacing: var(--tracking-tight);
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 /* botao de alternar tema claro/escuro */
@@ -511,7 +512,7 @@ body {
   height: 32px;
   border-radius: var(--radius-sm);
   background: transparent;
-  border: 1px solid var(--border-subtle);
+  /* border: 1px solid var(--border-subtle); */
   color: var(--text-secondary);
   font-size: 16px;
   line-height: 1;
