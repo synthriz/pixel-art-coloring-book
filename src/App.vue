@@ -7,6 +7,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useColoringStore } from "@/stores/coloring";
+import { printConsoleArt } from "@/utils/devToolsAscii";
 import UploadPanel from "@/components/UploadPanel.vue";
 import ControlPanel from "@/components/ControlPanel.vue";
 import PaletteSelector from "@/components/PaletteSelector.vue";
@@ -21,6 +22,8 @@ const store = useColoringStore();
 const isDark = ref(false);
 
 onMounted(() => {
+  printConsoleArt();
+
   const stored = localStorage.getItem("theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   isDark.value = stored ? stored === "dark" : prefersDark;
